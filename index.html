@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindGrow Math Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+    <style>
+        :root {
+            --primary: #473BF0;
+            --secondary: #F6C90E;
+            --success: #28C76F;
+            --danger: #EA5455;
+            --background: #EBF4FA;
+            --card-bg: #FFFFFF;
+            --text-color: #2C3E50;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        h1, h2, h3, .brand-title {
+            font-family: 'Fredoka One', cursive;
+            color: var(--primary);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+            padding: 30px;
+            text-align: center;
+            border: 4px solid #FFF;
+        }
+
+        /* Utility Classes untuk Skrin */
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Gaya Log Masuk */
+        .auth-logo {
+            font-size: 3.5rem;
+            color: var(--secondary);
+            text-shadow: 2px 2px var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            font-weight: 700;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 0 #3126C4;
+        }
+
+        .btn-google {
+            background-color: #FFFFFF;
+            color: #757575;
+            border: 2px solid #E2E8F0;
+            box-shadow: 0 4px 0 #E2E8F0;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: #000;
+            box-shadow: 0 4px 0 #D4AC0D;
+        }
+
+        .auth-toggle {
+            margin-top: 15px;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        /* Gaya Papan Pemuka & Pilihan */
+        .user-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #F8FAFC;
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .grid-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .grid-btn {
+            background: #FFF;
+            border: 3px solid var(--primary);
+            padding: 20px;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 6px 0 var(--primary);
+        }
+
+        .grid-btn:hover, .grid-btn.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Gaya Kuiz */
+        .progress-bar-container {
+            background: #E2E8F0;
+            border-radius: 10px;
+            height: 12px;
+            width: 100%;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: var(--success);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .quiz-box {
+            background: #F8FAFC;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 2px dashed var(--primary);
+        }
+
+        .question-text {
+            font-size: 2.5rem;
+            font-family: 'Fredoka One', cursive;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        /* Gaya Sejarah Keputusan */
+        .history-list {
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        .history-item {
+            background: #F1F5F9;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        /* Kesan Ralat/Notifikasi */
+        .error-msg {
+            color: var(--danger);
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        /* Maklumbalas Jawapan */
+        .feedback {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+            min-height: 35px;
+        }
+        .feedback.betul { color: var(--success); }
+        .feedback.salah { color: var(--danger); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="errorDisplay" class="error-msg"></div>
+
+        <div id="authScreen" class="screen active">
+            <div class="auth-logo"><i class="fa-solid copper-plate fa-graduation-cap"></i></div>
+            <h1 id="authTitle">MindGrow Math</h1>
+            <p style="margin-bottom: 20px;">Cabaran Matematik Kanak-Kanak Malaysia</p>
+
+            <div class="form-group">
+                <label for="authEmail">E-mel</label>
+                <input type="email" id="authEmail" class="form-control" placeholder="contoh@email.com">
+            </div>
+            <div class="form-group">
+                <label for="authPassword">Kata Laluan</label>
+                <input type="password" id="authPassword" class="form-control" placeholder="Minima 6 aksara">
+            </div>
+
+            <button id="btnEmailAuth" class="btn btn-primary">Log Masuk</button>
+            <button id="btnGoogleAuth" class="btn btn-google">
+                <img src="https://dashboard.firebase.google.com/favicon.ico" width="20" alt="G"> Log Masuk dengan Google
+            </button>
+
+            <p id="toggleAuthView" class="auth-toggle">Belum ada akaun? Daftar di sini</p>
+        </div>
+
+        <div id="dashboardScreen" class="screen">
+            <div class="user-nav">
+                <div><i class="fa-solid fa-user"></i> <span id="displayName">Pengguna</span></div>
+                <button id="btnSignOut" style="background:none; border:none; color:var(--danger); font-weight:700; cursor:pointer;"><i class="fa-solid fa-sign-out-alt"></i> Keluar</button>
+            </div>
+
+            <h2>Pilih Tahap Anda!</h2>
+            
+            <div id="levelSection">
+                <p style="margin-top:10px; font-weight:bold;">Pilih Tahun:</p>
+                <div class="grid-options" id="levelGrid">
+                    <button class="grid-btn level-btn" data-level="1">Tahun 1</button>
+                    <button class="grid-btn level-btn" data-level="2">Tahun 2</button>
+                    <button class="grid-btn level-btn" data-level="3">Tahun 3</button>
+                    <button class="grid-btn level-btn" data-level="4">Tahun 4</button>
+                    <button class="grid-btn level-btn" data-level="5">Tahun 5</button>
+                    <button class="grid-btn level-btn" data-level="6">Tahun 6</button>
+                </div>
+                <button id="btnNextToTopic" class="btn btn-secondary" style="margin-top:20px;" disabled>Seterusnya <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+
+            <div id="topicSection" style="display:none;">
+                <p style="margin-top:10px; font-weight:bold;">Pilih Topik Matematik:</p>
+                <div class="grid-options">
+                    <button class="grid-btn topic-btn" data-topic="Tambah"><i class="fa-solid fa-plus"></i> Tambah</button>
+                    <button class="grid-btn topic-btn" data-topic="Tolak"><i class="fa-solid fa-minus"></i> Tolak</button>
+                    <button class="grid-btn topic-btn" data-topic="Darab"><i class="fa-solid fa-xmark"></i> Darab</button>
+                    <button class="grid-btn topic-btn" data-topic="Bahagi"><i class="fa-solid fa-divide"></i> Bahagi</button>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button id="btnBackToLevel" class="btn btn-google" style="margin:0;"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
+                    <button id="btnStartChallenge" class="btn btn-primary" style="margin:0;" disabled>Mula Cabaran! <i class="fa-solid fa-play"></i></button>
+                </div>
+            </div>
+
+            <hr style="margin: 25px 0; border: 1px solid #E2E8F0;">
+            <h3><i class="fa-solid fa-clock-rotate-left"></i> Sejarah Rekod Anda</h3>
+            <div class="history-list" id="historyList">
+                <p style="text-align:center; color:#757575;">Tiada rekod lagi. Jom buat kuiz pertama anda!</p>
+            </div>
+        </div>
+
+        <div id="quizScreen" class="screen">
+            <div style="display:flex; justify-content:space-between; font-weight:700;">
+                <span id="quizMeta">Tahun 1 - Tambah</span>
+                <span>Soalan: <span id="currentQuestionNum">1</span>/10</span>
+            </div>
+            
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="quizProgress"></div>
+            </div>
+
+            <div class="quiz-box">
+                <div class="question-text" id="questionText">0 + 0 = ?</div>
+                <div class="form-group">
+                    <input type="number" id="userAnswer" class="form-control" style="font-size:1.8rem; text-align:center;" placeholder="Jawapan anda" autocomplete="off">
+                </div>
+                <div class="feedback" id="feedbackText"></div>
+                <button id="btnSubmitAnswer" class="btn btn-primary">Hantar Jawapan</button>
+            </div>
+        </div>
+
+        <div id="resultScreen" class="screen">
+            <h1 style="font-size:2.5rem; margin-bottom:10px;">Tahniah! 🎉</h1>
+            <p>Anda telah menamatkan cabaran ini.</p>
+
+            <div style="background:#F8FAFC; border-radius:20px; padding:25px; margin:20px 0;">
+                <div style="font-size:4rem; font-family:'Fredoka One', cursive; color:var(--secondary); text-shadow:2px 2px var(--primary);">
+                    <span id="finalScore">0</span>%
+                </div>
+                <p style="font-weight:700; margin-bottom:15px;">Skor Akhir Anda</p>
+                
+                <div style="display:flex; justify-content:space-around; margin-top:15px;">
+                    <div style="color:var(--success); font-weight:700;">
+                        <i class="fa-solid fa-circle-check"></i> Betul: <span id="totalCorrect">0</span>
+                    </div>
+                    <div style="color:var(--danger); font-weight:700;">
+                        <i class="fa-solid fa-circle-xmark"></i> Salah: <span id="totalWrong">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btnReturnDashboard" class="btn btn-primary">Kembali ke Papan Pemuka</button>
+        </div>
+    </div>
+
+    <script>
+        // --- KONFIGURASI FIREBASE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyB5gZe94qsaKe8rP9NHjspPNOFvLjyaY1E",
+            authDomain: "mindgrow-math-challenge.firebaseapp.com",
+            databaseURL: "https://mindgrow-math-challenge-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "mindgrow-math-challenge",
+            storageBucket: "mindgrow-math-challenge.firebasestorage.app",
+            messagingSenderId: "592430515920",
+            appId: "1:592430515920:web:bf782239f8fc39479080d5"
+        };
+
+        // Initialize Firebase Global Compat Instance
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // --- PEMANDU STATE APLIKASI ---
+        let currentUser = null;
+        let isLoginMode = true;
+        let selectedLevel = null;
+        let selectedTopic = null;
+
+        let currentQuestionIndex = 0;
+        let questionsArray = [];
+        let scoreCorrect = 0;
+        let scoreWrong = 0;
+
+        // --- DOM ELEMENTS ---
+        const authScreen = document.getElementById('authScreen');
+        const dashboardScreen = document.getElementById('dashboardScreen');
+        const quizScreen = document.getElementById('quizScreen');
+        const resultScreen = document.getElementById('resultScreen');
+
+        const errorDisplay = document.getElementById('errorDisplay');
+        const displayNameText = document.getElementById('displayName');
+        const historyList = document.getElementById('historyList');
+
+        // --- SISTEM NOTIFIKASI RALAT ---
+        function showError(message) {
+            errorDisplay.textContent = message;
+            errorDisplay.style.display = 'block';
+            setTimeout(() => { errorDisplay.style.display = 'none'; }, 5000);
+        }
+
+        // --- PENGURUSAN NAVIGATION SKRIN ---
+        function showScreen(screen) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            screen.classList.add('active');
+        }
+
+        // --- 1. PROSES AUTENTIKASI (FIREBASE AUTH) ---
+        const authTitle = document.getElementById('authTitle');
+        const btnEmailAuth = document.getElementById('btnEmailAuth');
+        const btnGoogleAuth = document.getElementById('btnGoogleAuth');
+        const toggleAuthView = document.getElementById('toggleAuthView');
+        const authEmailInput = document.getElementById('authEmail');
+        const authPasswordInput = document.getElementById('authPassword');
+
+        toggleAuthView.addEventListener('click', () => {
+            isLoginMode = !isLoginMode;
+            if (isLoginMode) {
+                authTitle.textContent = "MindGrow Math";
+                btnEmailAuth.textContent = "Log Masuk";
+                toggleAuthView.textContent = "Belum ada akaun? Daftar di sini";
+            } else {
+                authTitle.textContent = "Daftar Akaun Baru";
+                btnEmailAuth.textContent = "Daftar Sekarang";
+                toggleAuthView.textContent = "Sudah ada akaun? Log masuk di sini";
+            }
+        });
+
+        btnEmailAuth.addEventListener('click', () => {
+            const email = authEmailInput.value.trim();
+            const password = authPasswordInput.value.trim();
+
+            if (!email || !password) {
+                showError("Sila isi e-mel dan kata laluan!");
+                return;
+            }
+
+            if (isLoginMode) {
+                auth.signInWithEmailAndPassword(email, password)
+                    .catch(error => showError("Gagal Log Masuk: " + error.message));
+            } else {
+                auth.createUserWithEmailAndPassword(email, password)
+                    .catch(error => showError("Gagal Mendaftar: " + error.message));
+            }
+        });
+
+        btnGoogleAuth.addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .catch(error => showError("Gagal Log Masuk Google: " + error.message));
+        });
+
+        document.getElementById('btnSignOut').addEventListener('click', () => {
+            auth.signOut();
+        });
+
+        // Memantau status login pengguna
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                displayNameText.textContent = user.displayName || user.email.split('@')[0];
+                resetDashboardSelection();
+                loadUserHistory(user.uid);
+                showScreen(dashboardScreen);
+            } else {
+                currentUser = null;
+                showScreen(authScreen);
+            }
+        });
+
+        // --- 2. LOGIK PAPAN PEMUKA & PEMILIHAN TAHAP/TOPIK ---
+        const levelBtns = document.querySelectorAll('.level-btn');
+        const topicBtns = document.querySelectorAll('.topic-btn');
+        const btnNextToTopic = document.getElementById('btnNextToTopic');
+        const btnBackToLevel = document.getElementById('btnBackToLevel');
+        const btnStartChallenge = document.getElementById('btnStartChallenge');
+        const levelSection = document.getElementById('levelSection');
+        const topicSection = document.getElementById('topicSection');
+
+        function resetDashboardSelection() {
+            selectedLevel = null;
+            selectedTopic = null;
+            levelBtns.forEach(b => b.classList.remove('selected'));
+            topicBtns.forEach(b => b.classList.remove('selected'));
+            btnNextToTopic.disabled = true;
+            btnStartChallenge.disabled = true;
+            levelSection.style.display = 'block';
+            topicSection.style.display = 'none';
+        }
+
+        levelBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                levelBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedLevel = parseInt(btn.getAttribute('data-level'));
+                btnNextToTopic.disabled = false;
+            });
+        });
+
+        btnNextToTopic.addEventListener('click', () => {
+            levelSection.style.display = 'none';
+            topicSection.style.display = 'block';
+        });
+
+        btnBackToLevel.addEventListener('click', () => {
+            topicSection.style.display = 'none';
+            levelSection.style.display = 'block';
+        });
+
+        topicBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                topicBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedTopic = btn.getAttribute('data-topic');
+                btnStartChallenge.disabled = false;
+            });
+        });
+
+        btnStartChallenge.addEventListener('click', () => {
+            startQuiz();
+        });
+
+        // --- 3. SISTEM ENGINE PENJANAAN SOALAN RAWAK ---
+        function generateMathQuestions(level, topic) {
+            let questions = [];
+            let maxNum = 10;
+
+            // Penentuan kesukaran nombor berasaskan Tahun (1 hingga 6)
+            if (level === 1) maxNum = 10;
+            else if (level === 2) maxNum = 50;
+            else if (level === 3) maxNum = 100;
+            else if (level === 4) maxNum = 500;
+            else if (level === 5) maxNum = 1000;
+            else if (level === 6) maxNum = 5000;
+
+            for (let i = 0; i < 10; i++) {
+                let num1 = Math.floor(Math.random() * maxNum) + 1;
+                let num2 = Math.floor(Math.random() * (topic === 'Darab' || topic === 'Bahagi' ? 12 : maxNum)) + 1;
+                let questionStr = "";
+                let correctAnswer = 0;
+
+                switch (topic) {
+                    case "Tambah":
+                        correctAnswer = num1 + num2;
+                        questionStr = `${num1} + ${num2} = ?`;
+                        break;
+                    case "Tolak":
+                        // Elakkan hasil tolak negatif untuk kanak-kanak rendah
+                        if (num1 < num2) { let temp = num1; num1 = num2; num2 = temp; }
+                        correctAnswer = num1 - num2;
+                        questionStr = `${num1} - ${num2} = ?`;
+                        break;
+                    case "Darab":
+                        // Hadkan sifir mengikut kesesuaian tahap umur
+                        if (level <= 2) num1 = Math.floor(Math.random() * 5) + 1;
+                        correctAnswer = num1 * num2;
+                        questionStr = `${num1} × ${num2} = ?`;
+                        break;
+                    case "Bahagi":
+                        // Buat konsep bahagi genap tanpa baki terbalik daripada darab
+                        if (level <= 2) num2 = Math.floor(Math.random() * 5) + 1;
+                        let product = num1 * num2;
+                        correctAnswer = num1; 
+                        questionStr = `${product} ÷ ${num2} = ?`;
+                        break;
+                }
+
+                questions.push({ question: questionStr, answer: correctAnswer });
+            }
+            return questions;
+        }
+
+        // --- 4. LOGIK PERMAINAN KUIZ ---
+        const questionText = document.getElementById('questionText');
+        const userAnswerInput = document.getElementById('userAnswer');
+        const feedbackText = document.getElementById('feedbackText');
+        const btnSubmitAnswer = document.getElementById('btnSubmitAnswer');
+        const currentQuestionNum = document.getElementById('currentQuestionNum');
+        const quizProgress = document.getElementById('quizProgress');
+        const quizMeta = document.getElementById('quizMeta');
+
+        function startQuiz() {
+            questionsArray = generateMathQuestions(selectedLevel, selectedTopic);
+            currentQuestionIndex = 0;
+            scoreCorrect = 0;
+            scoreWrong = 0;
+            
+            quizMeta.textContent = `Tahun ${selectedLevel} - ${selectedTopic}`;
+            showQuestion();
+            showScreen(quizScreen);
+        }
+
+        function showQuestion() {
+            feedbackText.textContent = "";
+            feedbackText.className = "feedback";
+            userAnswerInput.value = "";
+            currentQuestionNum.textContent = currentQuestionIndex + 1;
+            
+            // Update Progress Bar
+            let progressPercent = (currentQuestionIndex / 10) * 100;
+            quizProgress.style.width = `${progressPercent}%`;
+
+            questionText.textContent = questionsArray[currentQuestionIndex].question;
+            btnSubmitAnswer.textContent = "Hantar Jawapan";
+            userAnswerInput.disabled = false;
+            userAnswerInput.focus();
+        }
+
+        btnSubmitAnswer.addEventListener('click', () => {
+            if (btnSubmitAnswer.textContent === "Seterusnya" || btnSubmitAnswer.textContent === "Lihat Keputusan") {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < 10) {
+                    showQuestion();
+                } else {
+                    finishQuiz();
+                }
+                return;
+            }
+
+            const inputAns = parseInt(userAnswerInput.value.trim());
+            if (isNaN(inputAns)) {
+                feedbackText.textContent = "Sila masukkan jawapan dalam bentuk nombor!";
+                feedbackText.className = "feedback salah";
+                return;
+            }
+
+            const actualAns = questionsArray[currentQuestionIndex].answer;
+            userAnswerInput.disabled = true;
+
+            if (inputAns === actualAns) {
+                scoreCorrect++;
+                feedbackText.textContent = "Betul! Cemerlang! 🌟";
+                feedbackText.className = "feedback betul";
+            } else {
+                scoreWrong++;
+                feedbackText.textContent = `Salah! Jawapan tepat ialah ${actualAns}`;
+                feedbackText.className = "feedback salah";
+            }
+
+            if (currentQuestionIndex === 9) {
+                btnSubmitAnswer.textContent = "Lihat Keputusan";
+            } else {
+                btnSubmitAnswer.textContent = "Seterusnya";
+            }
+        });
+
+        // Benarkan hantar jawapan guna butang 'Enter' di keyboard
+        userAnswerInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                btnSubmitAnswer.click();
+            }
+        });
+
+        // --- 5. FINISH KUIZ & SIMPAN DATA KE FIREBASE ---
+        const finalScoreText = document.getElementById('finalScore');
+        const totalCorrectText = document.getElementById('totalCorrect');
+        const totalWrongText = document.getElementById('totalWrong');
+
+        function finishQuiz() {
+            const finalScorePercentage = (scoreCorrect / 10) * 100;
+            
+            finalScoreText.textContent = finalScorePercentage;
+            totalCorrectText.textContent = scoreCorrect;
+            totalWrongText.textContent = scoreWrong;
+
+            // Simpan ke Realtime Database
+            if (currentUser) {
+                const gameResultRef = database.ref('results/' + currentUser.uid);
+                gameResultRef.push({
+                    tahap: `Tahun ${selectedLevel}`,
+                    topik: selectedTopic,
+                    betul: scoreCorrect,
+                    salah: scoreWrong,
+                    skor: finalScorePercentage,
+                    tarikh: new Date().toLocaleDateString('ms-MY', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                });
+            }
+
+            showScreen(resultScreen);
+        }
+
+        document.getElementById('btnReturnDashboard').addEventListener('click', () => {
+            resetDashboardSelection();
+            showScreen(dashboardScreen);
+        });
+
+        // --- 6. MEMAPARKAN SEJARAH REKOD DARI DATABASE ---
+        function loadUserHistory(userId) {
+            const historyRef = database.ref('results/' + userId);
+            historyRef.on('value', (snapshot) => {
+                historyList.innerHTML = "";
+                const data = snapshot.val();
+                if (data) {
+                    // Tukar objek ke array dan susun terbalik (rekod terbaru di atas)
+                    const items = Object.values(data).reverse();
+                    items.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'history-item';
+                        div.innerHTML = `
+                            <div>
+                                <strong>${item.tahap} (${item.topik})</strong><br>
+                                <small style="color:#64748B;">${item.tarikh}</small>
+                            </div>
+                            <div style="text-align:right; font-weight:700;">
+                                <span style="color:var(--primary);">${item.skor}% Skor</span><br>
+                                <small style="color:var(--success);">B: ${item.betul}</small> | <small style="color:var(--danger);">S: ${item.salah}</small>
+                            </div>
+                        `;
+                        historyList.appendChild(div);
+                    });
+                } else {
+                    historyList.innerHTML = `<p style="text-align:center; color:#757575;">Tiada rekod lagi. Jom buat kuiz pertama anda!</p>`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
