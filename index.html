@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MindGrow Math Challenge</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -12,14 +12,16 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
     <style>
+        /* TEMA PASTEL CERIA GAMIFIKASI */
         :root {
-            --primary: #473BF0;
-            --secondary: #F6C90E;
-            --success: #28C76F;
-            --danger: #EA5455;
-            --background: #EBF4FA;
+            --primary: #9D4EDD;   /* Ungu Gamers */
+            --secondary: #FFD166; /* Kuning Ceria */
+            --success: #06D6A0;   /* Hijau Mint */
+            --danger: #FF6B6B;    /* Pink/Merah Lembut */
+            --info: #48CAE4;      /* Biru Langit */
+            --background: #F0F4F8;
             --card-bg: #FFFFFF;
-            --text-color: #2C3E50;
+            --text-dark: #2B2D42;
         }
 
         * {
@@ -31,225 +33,296 @@
 
         body {
             background-color: var(--background);
-            color: var(--text-color);
+            background-image: radial-gradient(#d1d8e0 2px, transparent 2px);
+            background-size: 30px 30px;
+            color: var(--text-dark);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 15px;
+            overflow-x: hidden;
         }
 
         h1, h2, h3, .brand-title {
             font-family: 'Fredoka One', cursive;
-            color: var(--primary);
+            letter-spacing: 1px;
         }
 
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 650px;
             background: var(--card-bg);
-            border-radius: 24px;
-            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 5px 15px rgba(0,0,0,0.05);
+            padding: 35px;
             text-align: center;
-            border: 4px solid #FFF;
+            border: 6px solid #FFF;
+            position: relative;
         }
 
-        /* Utility Classes untuk Skrin */
-        .screen {
-            display: none;
-        }
-        .screen.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
+        /* UTILITY & ANIMASI */
+        .screen { display: none; }
+        .screen.active { 
+            display: block; 
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.02); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
-        /* Gaya Log Masuk */
-        .auth-logo {
-            font-size: 3.5rem;
-            color: var(--secondary);
-            text-shadow: 2px 2px var(--primary);
-            margin-bottom: 10px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
+        @keyframes pulseFeedback {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
-        .form-group label {
-            font-weight: 700;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #E2E8F0;
-            border-radius: 12px;
-            font-size: 1rem;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-        }
-
+        /* GAYA BUTANG 3D */
         .btn {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 700;
+            border-radius: 18px;
+            font-size: 1.2rem;
+            font-weight: 900;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-bottom: 10px;
+            transition: all 0.15s ease;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            font-family: 'Quicksand', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .btn:active {
-            transform: scale(0.98);
+            transform: translateY(6px);
         }
 
         .btn-primary {
             background-color: var(--primary);
             color: white;
-            box-shadow: 0 4px 0 #3126C4;
+            box-shadow: 0 6px 0 #6C2E9C;
         }
-
-        .btn-google {
-            background-color: #FFFFFF;
-            color: #757575;
-            border: 2px solid #E2E8F0;
-            box-shadow: 0 4px 0 #E2E8F0;
-        }
+        .btn-primary:active { box-shadow: 0 0px 0 #6C2E9C; }
 
         .btn-secondary {
             background-color: var(--secondary);
-            color: #000;
-            box-shadow: 0 4px 0 #D4AC0D;
+            color: var(--text-dark);
+            box-shadow: 0 6px 0 #D1A22E;
         }
+        .btn-secondary:active { box-shadow: 0 0px 0 #D1A22E; }
 
-        .auth-toggle {
-            margin-top: 15px;
-            color: var(--primary);
-            cursor: pointer;
+        .btn-google {
+            background-color: #FFF;
+            color: #555;
+            border: 2px solid #E2E8F0;
+            box-shadow: 0 6px 0 #E2E8F0;
+        }
+        .btn-google:active { box-shadow: 0 0px 0 #E2E8F0; }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+            box-shadow: 0 6px 0 #04A077;
+        }
+        .btn-success:active { box-shadow: 0 0px 0 #04A077; }
+
+        /* FORM INPUT */
+        .form-group { margin-bottom: 18px; text-align: left; }
+        .form-group label { font-weight: 800; display: block; margin-bottom: 8px; color: #555;}
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 3px solid #E2E8F0;
+            border-radius: 16px;
+            font-size: 1.1rem;
             font-weight: 700;
-        }
-
-        /* Gaya Papan Pemuka & Pilihan */
-        .user-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            outline: none;
+            transition: 0.3s;
             background: #F8FAFC;
-            padding: 10px 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+        }
+        .form-control:focus {
+            border-color: var(--info);
+            background: #FFF;
+            box-shadow: 0 0 0 4px rgba(72, 202, 228, 0.2);
         }
 
+        /* GAMIFIKASI STATS (DASHBOARD) */
+        .player-card {
+            background: linear-gradient(135deg, var(--info), var(--primary));
+            border-radius: 24px;
+            padding: 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(157, 78, 221, 0.3);
+            text-align: left;
+        }
+        .player-avatar {
+            width: 65px;
+            height: 65px;
+            background: #FFF;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            border: 4px solid var(--secondary);
+            flex-shrink: 0;
+        }
+        .player-info h3 { margin: 0 0 5px 0; font-size: 1.4rem; color:#FFF;}
+        .badges-row { display: flex; gap: 10px; font-weight: 700; font-size: 0.95rem; }
+        .badge { background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; }
+
+        /* PILIHAN KAD TAHUN & TOPIK */
         .grid-options {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
             gap: 15px;
-            margin-top: 20px;
+            margin-top: 15px;
         }
-
-        .grid-btn {
+        .card-btn {
             background: #FFF;
-            border: 3px solid var(--primary);
-            padding: 20px;
-            border-radius: 16px;
+            border: 3px solid #E2E8F0;
+            padding: 20px 10px;
+            border-radius: 20px;
             font-size: 1.2rem;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 6px 0 var(--primary);
+            transition: all 0.2s;
+            box-shadow: 0 6px 0 #E2E8F0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-dark);
+        }
+        .card-btn .emoji { font-size: 2.2rem; }
+        .card-btn:active { transform: translateY(6px); box-shadow: 0 0px 0 #E2E8F0; }
+        
+        .card-btn:hover { border-color: var(--info); }
+        .card-btn.selected {
+            background: var(--secondary);
+            border-color: var(--secondary);
+            box-shadow: 0 6px 0 #D1A22E;
+            color: #000;
         }
 
-        .grid-btn:hover, .grid-btn.selected {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* Gaya Kuiz */
-        .progress-bar-container {
+        /* PROGRESS BAR */
+        .progress-container {
             background: #E2E8F0;
-            border-radius: 10px;
-            height: 12px;
+            border-radius: 20px;
+            height: 20px;
             width: 100%;
-            margin: 15px 0;
+            margin: 20px 0;
             overflow: hidden;
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.1);
         }
-
-        .progress-bar {
-            background: var(--success);
+        .progress-fill {
+            background: linear-gradient(90deg, var(--info), var(--primary));
             height: 100%;
             width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .quiz-box {
-            background: #F8FAFC;
             border-radius: 20px;
-            padding: 30px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(255,255,255,0.3) 0%, transparent 100%);
+        }
+
+        /* KUIZ BOX */
+        .quiz-box {
+            background: #FFF;
+            border-radius: 24px;
+            padding: 35px 20px;
             margin: 20px 0;
-            border: 2px dashed var(--primary);
+            border: 4px dashed var(--info);
+            box-shadow: 0 10px 20px rgba(72, 202, 228, 0.1);
         }
-
         .question-text {
-            font-size: 2.5rem;
+            font-size: 3.5rem;
             font-family: 'Fredoka One', cursive;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
+            color: var(--primary);
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        .feedback {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin: 15px 0;
+            min-height: 40px;
+            border-radius: 12px;
+            padding: 10px;
+        }
+        .feedback.betul { background: #D1FAE5; color: #065F46; animation: pulseFeedback 0.4s; }
+        .feedback.salah { background: #FEE2E2; color: #991B1B; animation: pulseFeedback 0.4s; }
+
+        /* RESULT SCREEN */
+        .stars-container { font-size: 3.5rem; margin: 15px 0; text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .xp-badge {
+            background: var(--secondary);
+            color: #000;
+            font-weight: 900;
+            font-size: 1.5rem;
+            padding: 10px 25px;
+            border-radius: 30px;
+            display: inline-block;
+            margin: 10px 0;
+            box-shadow: 0 4px 0 #D1A22E;
         }
 
-        /* Gaya Sejarah Keputusan */
+        /* SEJARAH */
         .history-list {
-            max-height: 250px;
+            max-height: 220px;
             overflow-y: auto;
             margin-top: 15px;
             text-align: left;
+            padding-right: 5px;
         }
-
+        .history-list::-webkit-scrollbar { width: 8px; }
+        .history-list::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        
         .history-item {
-            background: #F1F5F9;
-            padding: 10px 15px;
-            border-radius: 10px;
-            margin-bottom: 8px;
+            background: #F8FAFC;
+            padding: 15px;
+            border-radius: 16px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
-            font-size: 0.9rem;
+            align-items: center;
+            border-left: 5px solid var(--info);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
-        /* Kesan Ralat/Notifikasi */
         .error-msg {
-            color: var(--danger);
+            background: var(--danger);
+            color: white;
             font-weight: bold;
-            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
             display: none;
+            animation: bounceIn 0.3s;
         }
-
-        /* Maklumbalas Jawapan */
-        .feedback {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin: 10px 0;
-            min-height: 35px;
+        
+        .auth-toggle {
+            margin-top: 20px;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 800;
+            display: inline-block;
         }
-        .feedback.betul { color: var(--success); }
-        .feedback.salah { color: var(--danger); }
     </style>
 </head>
 <body>
@@ -258,121 +331,136 @@
         <div id="errorDisplay" class="error-msg"></div>
 
         <div id="authScreen" class="screen active">
-            <div class="auth-logo"><i class="fa-solid fa-graduation-cap"></i></div>
-            <h1 id="authTitle">MindGrow Math</h1>
-            <p style="margin-bottom: 20px;">Cabaran Matematik Kanak-Kanak Malaysia</p>
+            <div style="font-size: 4rem; margin-bottom: 10px;">🚀</div>
+            <h1 id="authTitle" style="color:var(--primary); font-size:2.5rem;">MindGrow Math</h1>
+            <p style="margin-bottom: 25px; font-weight:700; color:#64748B;">Jom Main & Belajar Matematik!</p>
 
             <div class="form-group">
-                <label for="authEmail">E-mel</label>
+                <label>E-mel</label>
                 <input type="email" id="authEmail" class="form-control" placeholder="contoh@email.com">
             </div>
             <div class="form-group">
-                <label for="authPassword">Kata Laluan</label>
+                <label>Kata Laluan</label>
                 <input type="password" id="authPassword" class="form-control" placeholder="Minima 6 aksara">
             </div>
 
-            <button id="btnEmailAuth" class="btn btn-primary">Log Masuk</button>
+            <button id="btnEmailAuth" class="btn btn-primary">Mula Bermain!</button>
+            
+            <div style="margin: 15px 0; color: #94A3B8; font-weight: 800;">ATAU</div>
+
             <button id="btnGoogleAuth" class="btn btn-google">
-                <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
                 </svg>
-                Log Masuk dengan Google
+                Masuk dengan Google
             </button>
 
             <p id="toggleAuthView" class="auth-toggle">Belum ada akaun? Daftar di sini</p>
         </div>
 
         <div id="dashboardScreen" class="screen">
-            <div class="user-nav">
-                <div><i class="fa-solid fa-user"></i> <span id="displayName">Pengguna</span></div>
-                <button id="btnSignOut" style="background:none; border:none; color:var(--danger); font-weight:700; cursor:pointer;"><i class="fa-solid fa-sign-out-alt"></i> Keluar</button>
+            
+            <div class="player-card">
+                <div class="player-avatar">🦊</div>
+                <div class="player-info" style="flex-grow: 1;">
+                    <h3 id="displayName">Pengguna</h3>
+                    <div class="badges-row">
+                        <div class="badge">⭐ Lv. <span id="userLevel">1</span></div>
+                        <div class="badge">⚡ <span id="userXP">0</span> XP</div>
+                    </div>
+                </div>
+                <button id="btnSignOut" style="background:rgba(255,255,255,0.2); border:none; padding:10px; border-radius:12px; color:#FFF; cursor:pointer; font-size:1.2rem;" title="Log Keluar">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
             </div>
 
-            <h2>Pilih Tahap Anda!</h2>
-            
             <div id="levelSection">
-                <p style="margin-top:10px; font-weight:bold;">Pilih Tahun:</p>
-                <div class="grid-options" id="levelGrid">
-                    <button class="grid-btn level-btn" data-level="1">Tahun 1</button>
-                    <button class="grid-btn level-btn" data-level="2">Tahun 2</button>
-                    <button class="grid-btn level-btn" data-level="3">Tahun 3</button>
-                    <button class="grid-btn level-btn" data-level="4">Tahun 4</button>
-                    <button class="grid-btn level-btn" data-level="5">Tahun 5</button>
-                    <button class="grid-btn level-btn" data-level="6">Tahun 6</button>
+                <h2 style="color:var(--primary);">Pilih Tahun Anda! 🎒</h2>
+                <div class="grid-options">
+                    <button class="card-btn level-btn" data-level="1"><span class="emoji">🍎</span>Tahun 1</button>
+                    <button class="card-btn level-btn" data-level="2"><span class="emoji">✏️</span>Tahun 2</button>
+                    <button class="card-btn level-btn" data-level="3"><span class="emoji">🎨</span>Tahun 3</button>
+                    <button class="card-btn level-btn" data-level="4"><span class="emoji">🚀</span>Tahun 4</button>
+                    <button class="card-btn level-btn" data-level="5"><span class="emoji">🔬</span>Tahun 5</button>
+                    <button class="card-btn level-btn" data-level="6"><span class="emoji">🎓</span>Tahun 6</button>
                 </div>
-                <button id="btnNextToTopic" class="btn btn-secondary" style="margin-top:20px;" disabled>Seterusnya <i class="fa-solid fa-arrow-right"></i></button>
+                <button id="btnNextToTopic" class="btn btn-secondary" style="margin-top:25px;" disabled>Teruskan <i class="fa-solid fa-arrow-right"></i></button>
             </div>
 
             <div id="topicSection" style="display:none;">
-                <p style="margin-top:10px; font-weight:bold;">Pilih Topik Matematik:</p>
+                <h2 style="color:var(--primary);">Pilih Kuasa Anda! ⚡</h2>
                 <div class="grid-options">
-                    <button class="grid-btn topic-btn" data-topic="Tambah"><i class="fa-solid fa-plus"></i> Tambah</button>
-                    <button class="grid-btn topic-btn" data-topic="Tolak"><i class="fa-solid fa-minus"></i> Tolak</button>
-                    <button class="grid-btn topic-btn" data-topic="Darab"><i class="fa-solid fa-xmark"></i> Darab</button>
-                    <button class="grid-btn topic-btn" data-topic="Bahagi"><i class="fa-solid fa-divide"></i> Bahagi</button>
+                    <button class="card-btn topic-btn" data-topic="Tambah"><span class="emoji">➕</span>Tambah</button>
+                    <button class="card-btn topic-btn" data-topic="Tolak"><span class="emoji">➖</span>Tolak</button>
+                    <button class="card-btn topic-btn" data-topic="Darab"><span class="emoji">✖️</span>Darab</button>
+                    <button class="card-btn topic-btn" data-topic="Bahagi"><span class="emoji">➗</span>Bahagi</button>
                 </div>
-                <div style="display:flex; gap:10px; margin-top:20px;">
+                <div style="display:flex; gap:15px; margin-top:25px;">
                     <button id="btnBackToLevel" class="btn btn-google" style="margin:0;"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
-                    <button id="btnStartChallenge" class="btn btn-primary" style="margin:0;" disabled>Mula Cabaran! <i class="fa-solid fa-play"></i></button>
+                    <button id="btnStartChallenge" class="btn btn-primary" style="margin:0;" disabled>Mula Kuiz! <i class="fa-solid fa-play"></i></button>
                 </div>
             </div>
 
-            <hr style="margin: 25px 0; border: 1px solid #E2E8F0;">
-            <h3><i class="fa-solid fa-clock-rotate-left"></i> Sejarah Rekod Anda</h3>
+            <hr style="margin: 30px 0; border: 1.5px dashed #CBD5E1;">
+            <h3 style="color:var(--text-dark); display:flex; align-items:center; justify-content:center; gap:10px;">
+                <i class="fa-solid fa-trophy" style="color:var(--secondary);"></i> Sejarah Misi
+            </h3>
             <div class="history-list" id="historyList">
-                <p style="text-align:center; color:#757575;">Tiada rekod lagi. Jom buat kuiz pertama anda!</p>
+                <p style="text-align:center; color:#94A3B8; font-weight:700; margin-top:20px;">Belum ada rekod. Jom kumpul XP! 🎮</p>
             </div>
         </div>
 
         <div id="quizScreen" class="screen">
-            <div style="display:flex; justify-content:space-between; font-weight:700;">
+            <div style="display:flex; justify-content:space-between; font-weight:800; color:var(--text-dark); background:#F8FAFC; padding:10px 20px; border-radius:15px;">
                 <span id="quizMeta">Tahun 1 - Tambah</span>
-                <span>Soalan: <span id="currentQuestionNum">1</span>/10</span>
+                <span>Misi: <span id="currentQuestionNum">1</span>/10</span>
             </div>
             
-            <div class="progress-bar-container">
-                <div class="progress-bar" id="quizProgress"></div>
+            <div class="progress-container">
+                <div class="progress-fill" id="quizProgress"></div>
             </div>
 
             <div class="quiz-box">
                 <div class="question-text" id="questionText">0 + 0 = ?</div>
                 <div class="form-group">
-                    <input type="number" id="userAnswer" class="form-control" style="font-size:1.8rem; text-align:center;" placeholder="Jawapan anda" autocomplete="off">
+                    <input type="number" id="userAnswer" class="form-control" style="font-size:2rem; text-align:center; height:70px;" placeholder="Taip jawapan..." autocomplete="off">
                 </div>
                 <div class="feedback" id="feedbackText"></div>
-                <button id="btnSubmitAnswer" class="btn btn-primary">Hantar Jawapan</button>
+                <button id="btnSubmitAnswer" class="btn btn-primary">Semak Jawapan <i class="fa-solid fa-check"></i></button>
             </div>
         </div>
 
         <div id="resultScreen" class="screen">
-            <h1 style="font-size:2.5rem; margin-bottom:10px;">Tahniah! 🎉</h1>
-            <p>Anda telah menamatkan cabaran ini.</p>
+            <div id="resultStars" class="stars-container">⭐⭐⭐</div>
+            <h1 style="font-size:2.8rem; color:var(--primary); margin-bottom:10px;">Tahniah! 🎉</h1>
+            
+            <div class="xp-badge" id="xpGainedText">+100 XP</div>
 
-            <div style="background:#F8FAFC; border-radius:20px; padding:25px; margin:20px 0;">
-                <div style="font-size:4rem; font-family:'Fredoka One', cursive; color:var(--secondary); text-shadow:2px 2px var(--primary);">
+            <div style="background:#F8FAFC; border-radius:24px; padding:25px; margin:20px 0; border:3px solid #E2E8F0;">
+                <div style="font-size:4.5rem; font-family:'Fredoka One', cursive; color:var(--info);">
                     <span id="finalScore">0</span>%
                 </div>
-                <p style="font-weight:700; margin-bottom:15px;">Skor Akhir Anda</p>
+                <p style="font-weight:800; color:#64748B;">Skor Ketepatan</p>
                 
-                <div style="display:flex; justify-content:space-around; margin-top:15px;">
-                    <div style="color:var(--success); font-weight:700;">
+                <div style="display:flex; justify-content:space-around; margin-top:20px; font-size:1.2rem;">
+                    <div style="color:var(--success); font-weight:800;">
                         <i class="fa-solid fa-circle-check"></i> Betul: <span id="totalCorrect">0</span>
                     </div>
-                    <div style="color:var(--danger); font-weight:700;">
+                    <div style="color:var(--danger); font-weight:800;">
                         <i class="fa-solid fa-circle-xmark"></i> Salah: <span id="totalWrong">0</span>
                     </div>
                 </div>
             </div>
 
-            <button id="btnReturnDashboard" class="btn btn-primary">Kembali ke Papan Pemuka</button>
+            <button id="btnReturnDashboard" class="btn btn-success" style="font-size:1.3rem;">Tuntut Ganjaran & Kembali <i class="fa-solid fa-gift"></i></button>
         </div>
     </div>
 
     <script>
-        // --- KONFIGURASI FIREBASE ---
+        // --- KONFIGURASI FIREBASE (TIDAK DIUBAH) ---
         const firebaseConfig = {
             apiKey: "AIzaSyB5gZe94qsaKe8rP9NHjspPNOFvLjyaY1E",
             authDomain: "mindgrow-math-challenge.firebaseapp.com",
@@ -383,12 +471,12 @@
             appId: "1:592430515920:web:bf782239f8fc39479080d5"
         };
 
-        // Initialize Firebase Global Compat Instance
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
 
-        // --- PEMANDU STATE APLIKASI ---
+        // --- PEMANDU STATE ---
         let currentUser = null;
         let isLoginMode = true;
         let selectedLevel = null;
@@ -404,79 +492,57 @@
         const dashboardScreen = document.getElementById('dashboardScreen');
         const quizScreen = document.getElementById('quizScreen');
         const resultScreen = document.getElementById('resultScreen');
-
         const errorDisplay = document.getElementById('errorDisplay');
-        const displayNameText = document.getElementById('displayName');
-        const historyList = document.getElementById('historyList');
 
-        // --- SISTEM NOTIFIKASI RALAT ---
         function showError(message) {
             errorDisplay.textContent = message;
             errorDisplay.style.display = 'block';
             setTimeout(() => { errorDisplay.style.display = 'none'; }, 5000);
         }
 
-        // --- PENGURUSAN NAVIGATION SKRIN ---
         function showScreen(screen) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             screen.classList.add('active');
         }
 
-        // --- 1. PROSES AUTENTIKASI (FIREBASE AUTH) ---
-        const authTitle = document.getElementById('authTitle');
-        const btnEmailAuth = document.getElementById('btnEmailAuth');
-        const btnGoogleAuth = document.getElementById('btnGoogleAuth');
-        const toggleAuthView = document.getElementById('toggleAuthView');
-        const authEmailInput = document.getElementById('authEmail');
-        const authPasswordInput = document.getElementById('authPassword');
-
-        toggleAuthView.addEventListener('click', () => {
+        // --- 1. AUTENTIKASI ---
+        document.getElementById('toggleAuthView').addEventListener('click', () => {
             isLoginMode = !isLoginMode;
             if (isLoginMode) {
-                authTitle.textContent = "MindGrow Math";
-                btnEmailAuth.textContent = "Log Masuk";
-                toggleAuthView.textContent = "Belum ada akaun? Daftar di sini";
+                document.getElementById('authTitle').textContent = "MindGrow Math";
+                document.getElementById('btnEmailAuth').textContent = "Mula Bermain!";
+                document.getElementById('toggleAuthView').textContent = "Belum ada akaun? Daftar di sini";
             } else {
-                authTitle.textContent = "Daftar Akaun Baru";
-                btnEmailAuth.textContent = "Daftar Sekarang";
-                toggleAuthView.textContent = "Sudah ada akaun? Log masuk di sini";
+                document.getElementById('authTitle').textContent = "Daftar Akaun";
+                document.getElementById('btnEmailAuth').textContent = "Daftar Sekarang!";
+                document.getElementById('toggleAuthView').textContent = "Sudah ada akaun? Log masuk";
             }
         });
 
-        btnEmailAuth.addEventListener('click', () => {
-            const email = authEmailInput.value.trim();
-            const password = authPasswordInput.value.trim();
-
-            if (!email || !password) {
-                showError("Sila isi e-mel dan kata laluan!");
-                return;
-            }
+        document.getElementById('btnEmailAuth').addEventListener('click', () => {
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+            if (!email || !password) return showError("Isi e-mel dan kata laluan ya! 😊");
 
             if (isLoginMode) {
-                auth.signInWithEmailAndPassword(email, password)
-                    .catch(error => showError("Gagal Log Masuk: " + error.message));
+                auth.signInWithEmailAndPassword(email, password).catch(err => showError("Gagal: " + err.message));
             } else {
-                auth.createUserWithEmailAndPassword(email, password)
-                    .catch(error => showError("Gagal Mendaftar: " + error.message));
+                auth.createUserWithEmailAndPassword(email, password).catch(err => showError("Gagal: " + err.message));
             }
         });
 
-        btnGoogleAuth.addEventListener('click', () => {
+        document.getElementById('btnGoogleAuth').addEventListener('click', () => {
             const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider)
-                .catch(error => showError("Gagal Log Masuk Google: " + error.message));
+            auth.signInWithPopup(provider).catch(err => showError("Gagal: " + err.message));
         });
 
-        document.getElementById('btnSignOut').addEventListener('click', () => {
-            auth.signOut();
-        });
+        document.getElementById('btnSignOut').addEventListener('click', () => auth.signOut());
 
-        // Memantau status login pengguna
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
-                displayNameText.textContent = user.displayName || user.email.split('@')[0];
-                resetDashboardSelection();
+                document.getElementById('displayName').textContent = user.displayName || user.email.split('@')[0];
+                resetDashboard();
                 loadUserHistory(user.uid);
                 showScreen(dashboardScreen);
             } else {
@@ -485,24 +551,19 @@
             }
         });
 
-        // --- 2. LOGIK PAPAN PEMUKA & PEMILIHAN TAHAP/TOPIK ---
+        // --- 2. PAPAN PEMUKA ---
         const levelBtns = document.querySelectorAll('.level-btn');
         const topicBtns = document.querySelectorAll('.topic-btn');
         const btnNextToTopic = document.getElementById('btnNextToTopic');
-        const btnBackToLevel = document.getElementById('btnBackToLevel');
         const btnStartChallenge = document.getElementById('btnStartChallenge');
-        const levelSection = document.getElementById('levelSection');
-        const topicSection = document.getElementById('topicSection');
 
-        function resetDashboardSelection() {
-            selectedLevel = null;
-            selectedTopic = null;
+        function resetDashboard() {
+            selectedLevel = null; selectedTopic = null;
             levelBtns.forEach(b => b.classList.remove('selected'));
             topicBtns.forEach(b => b.classList.remove('selected'));
-            btnNextToTopic.disabled = true;
-            btnStartChallenge.disabled = true;
-            levelSection.style.display = 'block';
-            topicSection.style.display = 'none';
+            btnNextToTopic.disabled = true; btnStartChallenge.disabled = true;
+            document.getElementById('levelSection').style.display = 'block';
+            document.getElementById('topicSection').style.display = 'none';
         }
 
         levelBtns.forEach(btn => {
@@ -515,13 +576,13 @@
         });
 
         btnNextToTopic.addEventListener('click', () => {
-            levelSection.style.display = 'none';
-            topicSection.style.display = 'block';
+            document.getElementById('levelSection').style.display = 'none';
+            document.getElementById('topicSection').style.display = 'block';
         });
 
-        btnBackToLevel.addEventListener('click', () => {
-            topicSection.style.display = 'none';
-            levelSection.style.display = 'block';
+        document.getElementById('btnBackToLevel').addEventListener('click', () => {
+            document.getElementById('topicSection').style.display = 'none';
+            document.getElementById('levelSection').style.display = 'block';
         });
 
         topicBtns.forEach(btn => {
@@ -533,157 +594,155 @@
             });
         });
 
-        btnStartChallenge.addEventListener('click', () => {
-            startQuiz();
-        });
+        btnStartChallenge.addEventListener('click', () => startQuiz());
 
-        // --- 3. SISTEM ENGINE PENJANAAN SOALAN RAWAK ---
+        // --- 3. GAMIFIKASI: PENGIRAAN XP DINAMIK & SEJARAH ---
+        // (Struktur DB tidak diubah, kita kira XP dari jumlah 'betul' rekod lepas)
+        function loadUserHistory(userId) {
+            database.ref('results/' + userId).on('value', (snapshot) => {
+                const historyList = document.getElementById('historyList');
+                historyList.innerHTML = "";
+                const data = snapshot.val();
+                
+                let totalCorrectAllTime = 0;
+
+                if (data) {
+                    const items = Object.values(data).reverse();
+                    items.forEach(item => {
+                        totalCorrectAllTime += item.betul || 0; // Kumpul data untuk XP
+                        
+                        const div = document.createElement('div');
+                        div.className = 'history-item';
+                        div.innerHTML = `
+                            <div>
+                                <strong style="color:var(--primary); font-size:1.1rem;">${item.tahap} (${item.topik})</strong><br>
+                                <small style="color:#64748B;">${item.tarikh}</small>
+                            </div>
+                            <div style="text-align:right;">
+                                <span style="font-weight:900; color:var(--info); font-size:1.1rem;">${item.skor}%</span><br>
+                                <small style="color:var(--success); font-weight:700;">✔️ ${item.betul}</small> | 
+                                <small style="color:var(--danger); font-weight:700;">❌ ${item.salah}</small>
+                            </div>
+                        `;
+                        historyList.appendChild(div);
+                    });
+                } else {
+                    historyList.innerHTML = `<p style="text-align:center; color:#94A3B8; font-weight:700; margin-top:20px;">Belum ada rekod. Jom kumpul XP! 🎮</p>`;
+                }
+
+                // Kemaskini Profil Gamifikasi
+                let totalXP = totalCorrectAllTime * 10; // 1 Betul = 10 XP
+                let level = Math.floor(totalXP / 100) + 1; // 100 XP = 1 Level
+                document.getElementById('userXP').textContent = totalXP;
+                document.getElementById('userLevel').textContent = level;
+            });
+        }
+
+        // --- 4. ENJIN SOALAN ---
         function generateMathQuestions(level, topic) {
             let questions = [];
-            let maxNum = 10;
-
-            // Penentuan kesukaran nombor berasaskan Tahun (1 hingga 6)
-            if (level === 1) maxNum = 10;
-            else if (level === 2) maxNum = 50;
-            else if (level === 3) maxNum = 100;
-            else if (level === 4) maxNum = 500;
-            else if (level === 5) maxNum = 1000;
-            else if (level === 6) maxNum = 5000;
+            let maxNum = level === 1 ? 10 : level === 2 ? 50 : level === 3 ? 100 : level === 4 ? 500 : level === 5 ? 1000 : 5000;
 
             for (let i = 0; i < 10; i++) {
                 let num1 = Math.floor(Math.random() * maxNum) + 1;
                 let num2 = Math.floor(Math.random() * (topic === 'Darab' || topic === 'Bahagi' ? 12 : maxNum)) + 1;
-                let questionStr = "";
-                let correctAnswer = 0;
+                let qStr = "", ans = 0;
 
-                switch (topic) {
-                    case "Tambah":
-                        correctAnswer = num1 + num2;
-                        questionStr = `${num1} + ${num2} = ?`;
-                        break;
-                    case "Tolak":
-                        // Elakkan hasil tolak negatif untuk kanak-kanak rendah
-                        if (num1 < num2) { let temp = num1; num1 = num2; num2 = temp; }
-                        correctAnswer = num1 - num2;
-                        questionStr = `${num1} - ${num2} = ?`;
-                        break;
-                    case "Darab":
-                        // Hadkan sifir mengikut kesesuaian tahap umur
-                        if (level <= 2) num1 = Math.floor(Math.random() * 5) + 1;
-                        correctAnswer = num1 * num2;
-                        questionStr = `${num1} × ${num2} = ?`;
-                        break;
-                    case "Bahagi":
-                        // Buat konsep bahagi genap tanpa baki terbalik daripada darab
-                        if (level <= 2) num2 = Math.floor(Math.random() * 5) + 1;
-                        let product = num1 * num2;
-                        correctAnswer = num1; 
-                        questionStr = `${product} ÷ ${num2} = ?`;
-                        break;
+                if (topic === "Tambah") { ans = num1 + num2; qStr = `${num1} + ${num2} = ?`; }
+                else if (topic === "Tolak") {
+                    if (num1 < num2) [num1, num2] = [num2, num1];
+                    ans = num1 - num2; qStr = `${num1} - ${num2} = ?`;
                 }
-
-                questions.push({ question: questionStr, answer: correctAnswer });
+                else if (topic === "Darab") {
+                    if (level <= 2) num1 = Math.floor(Math.random() * 5) + 1;
+                    ans = num1 * num2; qStr = `${num1} × ${num2} = ?`;
+                }
+                else if (topic === "Bahagi") {
+                    if (level <= 2) num2 = Math.floor(Math.random() * 5) + 1;
+                    ans = num1; qStr = `${num1 * num2} ÷ ${num2} = ?`;
+                }
+                questions.push({ q: qStr, a: ans });
             }
             return questions;
         }
 
-        // --- 4. LOGIK PERMAINAN KUIZ ---
-        const questionText = document.getElementById('questionText');
-        const userAnswerInput = document.getElementById('userAnswer');
+        // --- 5. LOGIK KUIZ CERIA ---
         const feedbackText = document.getElementById('feedbackText');
-        const btnSubmitAnswer = document.getElementById('btnSubmitAnswer');
-        const currentQuestionNum = document.getElementById('currentQuestionNum');
-        const quizProgress = document.getElementById('quizProgress');
-        const quizMeta = document.getElementById('quizMeta');
+        const userAnswer = document.getElementById('userAnswer');
+        const btnSubmitAns = document.getElementById('btnSubmitAnswer');
 
         function startQuiz() {
             questionsArray = generateMathQuestions(selectedLevel, selectedTopic);
-            currentQuestionIndex = 0;
-            scoreCorrect = 0;
-            scoreWrong = 0;
-            
-            quizMeta.textContent = `Tahun ${selectedLevel} - ${selectedTopic}`;
+            currentQuestionIndex = 0; scoreCorrect = 0; scoreWrong = 0;
+            document.getElementById('quizMeta').textContent = `Tahun ${selectedLevel} | ${selectedTopic}`;
             showQuestion();
             showScreen(quizScreen);
         }
 
         function showQuestion() {
-            feedbackText.textContent = "";
-            feedbackText.className = "feedback";
-            userAnswerInput.value = "";
-            currentQuestionNum.textContent = currentQuestionIndex + 1;
-            
-            // Update Progress Bar
-            let progressPercent = (currentQuestionIndex / 10) * 100;
-            quizProgress.style.width = `${progressPercent}%`;
-
-            questionText.textContent = questionsArray[currentQuestionIndex].question;
-            btnSubmitAnswer.textContent = "Hantar Jawapan";
-            userAnswerInput.disabled = false;
-            userAnswerInput.focus();
+            feedbackText.textContent = ""; feedbackText.className = "feedback";
+            userAnswer.value = ""; userAnswer.disabled = false;
+            document.getElementById('currentQuestionNum').textContent = currentQuestionIndex + 1;
+            document.getElementById('quizProgress').style.width = `${(currentQuestionIndex / 10) * 100}%`;
+            document.getElementById('questionText').textContent = questionsArray[currentQuestionIndex].q;
+            btnSubmitAns.innerHTML = `Semak Jawapan <i class="fa-solid fa-check"></i>`;
+            btnSubmitAns.className = "btn btn-primary";
+            setTimeout(() => userAnswer.focus(), 100);
         }
 
-        btnSubmitAnswer.addEventListener('click', () => {
-            if (btnSubmitAnswer.textContent === "Seterusnya" || btnSubmitAnswer.textContent === "Lihat Keputusan") {
+        btnSubmitAns.addEventListener('click', () => {
+            if (btnSubmitAns.textContent.includes("Seterusnya") || btnSubmitAns.textContent.includes("Keputusan")) {
                 currentQuestionIndex++;
-                if (currentQuestionIndex < 10) {
-                    showQuestion();
-                } else {
-                    finishQuiz();
-                }
+                currentQuestionIndex < 10 ? showQuestion() : finishQuiz();
                 return;
             }
 
-            const inputAns = parseInt(userAnswerInput.value.trim());
-            if (isNaN(inputAns)) {
-                feedbackText.textContent = "Sila masukkan jawapan dalam bentuk nombor!";
+            const inputVal = parseInt(userAnswer.value.trim());
+            if (isNaN(inputVal)) {
+                feedbackText.textContent = "Eh, masukkan nombor ya! 😅";
                 feedbackText.className = "feedback salah";
                 return;
             }
 
-            const actualAns = questionsArray[currentQuestionIndex].answer;
-            userAnswerInput.disabled = true;
+            const actualAns = questionsArray[currentQuestionIndex].a;
+            userAnswer.disabled = true;
 
-            if (inputAns === actualAns) {
+            if (inputVal === actualAns) {
                 scoreCorrect++;
-                feedbackText.textContent = "Betul! Cemerlang! 🌟";
+                feedbackText.textContent = "Hebat! 🌟 Tepat sekali!";
                 feedbackText.className = "feedback betul";
+                btnSubmitAns.className = "btn btn-success";
             } else {
                 scoreWrong++;
-                feedbackText.textContent = `Salah! Jawapan tepat ialah ${actualAns}`;
+                feedbackText.textContent = `Cuba lagi ya 😊 Jawapan sebenar: ${actualAns}`;
                 feedbackText.className = "feedback salah";
+                btnSubmitAns.className = "btn btn-secondary";
             }
 
-            if (currentQuestionIndex === 9) {
-                btnSubmitAnswer.textContent = "Lihat Keputusan";
-            } else {
-                btnSubmitAnswer.textContent = "Seterusnya";
-            }
+            btnSubmitAns.innerHTML = currentQuestionIndex === 9 ? `Lihat Keputusan <i class="fa-solid fa-trophy"></i>` : `Soalan Seterusnya <i class="fa-solid fa-arrow-right"></i>`;
         });
 
-        // Benarkan hantar jawapan guna butang 'Enter' di keyboard
-        userAnswerInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                btnSubmitAnswer.click();
-            }
-        });
+        userAnswer.addEventListener('keypress', (e) => { if (e.key === 'Enter') btnSubmitAns.click(); });
 
-        // --- 5. FINISH KUIZ & SIMPAN DATA KE FIREBASE ---
-        const finalScoreText = document.getElementById('finalScore');
-        const totalCorrectText = document.getElementById('totalCorrect');
-        const totalWrongText = document.getElementById('totalWrong');
-
+        // --- 6. TAMAT KUIZ & SIMPAN DATA ---
         function finishQuiz() {
             const finalScorePercentage = (scoreCorrect / 10) * 100;
+            const xpEarned = scoreCorrect * 10;
             
-            finalScoreText.textContent = finalScorePercentage;
-            totalCorrectText.textContent = scoreCorrect;
-            totalWrongText.textContent = scoreWrong;
+            document.getElementById('finalScore').textContent = finalScorePercentage;
+            document.getElementById('totalCorrect').textContent = scoreCorrect;
+            document.getElementById('totalWrong').textContent = scoreWrong;
+            document.getElementById('xpGainedText').textContent = `+${xpEarned} XP`;
 
-            // Simpan ke Realtime Database
+            // Bintang Gamifikasi
+            let stars = "⭐";
+            if(scoreCorrect >= 8) stars = "⭐⭐⭐";
+            else if(scoreCorrect >= 5) stars = "⭐⭐";
+            document.getElementById('resultStars').innerHTML = stars;
+
+            // Simpan Data (Struktur Asal Dikekalkan)
             if (currentUser) {
-                const gameResultRef = database.ref('results/' + currentUser.uid);
-                gameResultRef.push({
+                database.ref('results/' + currentUser.uid).push({
                     tahap: `Tahun ${selectedLevel}`,
                     topik: selectedTopic,
                     betul: scoreCorrect,
@@ -697,39 +756,9 @@
         }
 
         document.getElementById('btnReturnDashboard').addEventListener('click', () => {
-            resetDashboardSelection();
+            resetDashboard();
             showScreen(dashboardScreen);
         });
-
-        // --- 6. MEMAPARKAN SEJARAH REKOD DARI DATABASE ---
-        function loadUserHistory(userId) {
-            const historyRef = database.ref('results/' + userId);
-            historyRef.on('value', (snapshot) => {
-                historyList.innerHTML = "";
-                const data = snapshot.val();
-                if (data) {
-                    // Tukar objek ke array dan susun terbalik (rekod terbaru di atas)
-                    const items = Object.values(data).reverse();
-                    items.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'history-item';
-                        div.innerHTML = `
-                            <div>
-                                <strong>${item.tahap} (${item.topik})</strong><br>
-                                <small style="color:#64748B;">${item.tarikh}</small>
-                            </div>
-                            <div style="text-align:right; font-weight:700;">
-                                <span style="color:var(--primary);">${item.skor}% Skor</span><br>
-                                <small style="color:var(--success);">B: ${item.betul}</small> | <small style="color:var(--danger);">S: ${item.salah}</small>
-                            </div>
-                        `;
-                        historyList.appendChild(div);
-                    });
-                } else {
-                    historyList.innerHTML = `<p style="text-align:center; color:#757575;">Tiada rekod lagi. Jom buat kuiz pertama anda!</p>`;
-                }
-            });
-        }
     </script>
 </body>
 </html>
